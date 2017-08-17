@@ -50,10 +50,9 @@ namespace The_Santa_Claus_Problem {
             while (true) {
                 Console.WriteLine("Santa is sleeping");
                 santaSem.WaitOne();
-                Thread.Sleep(1000);
                 Console.WriteLine("Santa has been woken up");
                 m.WaitOne();
-                Thread.Sleep(1000);
+                Console.WriteLine("Locked");
                 if (reindeerCount == 9) {
                     prepSleigh();
                     reindeerSem.Release(9);
@@ -62,8 +61,8 @@ namespace The_Santa_Claus_Problem {
                     elfSem.Release(3);
                     helpElves();
                 }
-                Thread.Sleep(1000);
                 m.ReleaseMutex();
+                Console.WriteLine("Unlocked");
             }
         }
 
@@ -79,54 +78,53 @@ namespace The_Santa_Claus_Problem {
             if (Thread.CurrentThread.Name == "elf") {
                 Console.WriteLine("An elf is waiting at the door");
                 elfMutex.WaitOne();
-                Thread.Sleep(1000);
                 Console.WriteLine("An elf is waiting in line, closing door");
                 m.WaitOne();
-                Thread.Sleep(1000);
+                Console.WriteLine("locked");
                 elfCount++;
                 if (elfCount == 3) {
                     Console.WriteLine(elfCount + " elfs are waiting for help, signaling Santa");
                     santaSem.Release();
-                } else {
-                    Console.WriteLine(elfCount + " elfs are waiting for help, opening door");
+                } else {                    
                     elfMutex.ReleaseMutex();
+                    Console.WriteLine(elfCount + " elfs are waiting for help, opening door");
                 }
-                Thread.Sleep(1000);
                 m.ReleaseMutex();
+                Console.WriteLine("unlocked");
                 elfSem.WaitOne();
                 getHelp();
                 m.WaitOne();
+                Console.WriteLine("locked");
                 elfCount--;
                 if (elfCount == 0) {
-                    Console.WriteLine(elfCount + "Are still waiting for help");
+                    Console.WriteLine("all elfs helped, opening door");
                     elfMutex.ReleaseMutex();
                 }
-                Thread.Sleep(1000);
                 m.ReleaseMutex();
-
+                Console.WriteLine("unlocked");
             //if reindeer
             } else {
                 Console.WriteLine("A reindeer is waiting in line");
                 m.WaitOne();
-                Thread.Sleep(1000);
+                Console.WriteLine("locked");
                 reindeerCount++;
                 if (reindeerCount == 9) {
                     Console.WriteLine(reindeerCount + " (all) reindeers are ready, signaling Santa");
                     santaSem.Release();
                 } else Console.WriteLine(reindeerCount + " Reindeers are ready");
                 m.ReleaseMutex();
-                Thread.Sleep(1000);                
+                Console.WriteLine("unlocked");
                 reindeerSem.WaitOne();
                 getHitched();
             }
         }
 
         private static void getHelp() {
-            Console.WriteLine("an elf are getting help");
+            Console.WriteLine("an elf is getting help");
         }
 
         private static void getHitched() {
-            Console.WriteLine("a reindeer are hitched");
+            Console.WriteLine("a reindeer is hitched");
         }
     }
 }
