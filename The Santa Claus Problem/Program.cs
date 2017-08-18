@@ -12,9 +12,9 @@ namespace The_Santa_Claus_Problem {
         static int elfCount = 0;
         static int reindeerCount = 0;
 
-        static Semaphore santaSem = new Semaphore(0,1);             //Where Santa waits
-        static Semaphore reindeerSem = new Semaphore(0,9);          //Where reindeer wait
-        static Semaphore elfSem = new Semaphore(0,10);       //Where elves wait
+        static Semaphore santaSem = new Semaphore(0,1);     //Where Santa waits
+        static Semaphore reindeerSem = new Semaphore(0,9);  //Where reindeer wait
+        static Semaphore elfSem = new Semaphore(0,10);      //Where elves wait
 
         static Mutex m = new Mutex();           //Protects the counters
         static Mutex elfMutex = new Mutex();    //blocks other elves while three
@@ -61,12 +61,13 @@ namespace The_Santa_Claus_Problem {
                     elfSem.Release(3);
                     helpElves();
                 }
-                m.ReleaseMutex();
                 Console.WriteLine("Unlocked");
+                m.ReleaseMutex();
             }
         }
 
         private static void helpElves() {
+            Console.WriteLine("Santa is helping the elves");
         }
 
         private static void prepSleigh() {
@@ -89,19 +90,20 @@ namespace The_Santa_Claus_Problem {
                     elfMutex.ReleaseMutex();
                     Console.WriteLine(elfCount + " elfs are waiting for help, opening door");
                 }
-                m.ReleaseMutex();
                 Console.WriteLine("unlocked");
+                m.ReleaseMutex();
                 elfSem.WaitOne();
                 getHelp();
                 m.WaitOne();
                 Console.WriteLine("locked");
                 elfCount--;
+                Console.WriteLine(elfCount + " elfs still waiting for help");
                 if (elfCount == 0) {
-                    Console.WriteLine("all elfs helped, opening door");
+                    Console.WriteLine("opening door");
                     elfMutex.ReleaseMutex();
                 }
-                m.ReleaseMutex();
                 Console.WriteLine("unlocked");
+                m.ReleaseMutex();
             //if reindeer
             } else {
                 Console.WriteLine("A reindeer is waiting in line");
@@ -112,8 +114,8 @@ namespace The_Santa_Claus_Problem {
                     Console.WriteLine(reindeerCount + " (all) reindeers are ready, signaling Santa");
                     santaSem.Release();
                 } else Console.WriteLine(reindeerCount + " Reindeers are ready");
-                m.ReleaseMutex();
                 Console.WriteLine("unlocked");
+                m.ReleaseMutex();
                 reindeerSem.WaitOne();
                 getHitched();
             }
